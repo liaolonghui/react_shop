@@ -12,6 +12,21 @@ export default class Login extends Component {
     console.log(values)
   }
 
+  // 验证密码（自定义验证）
+  validatePwd = (rule, value, callback) => {
+    if (!value) {
+      callback('请输入密码！')
+    } else if (value.length < 4) {
+      callback('密码长度不能小于4位！')
+    } else if (value.length > 12) {
+      callback('密码长度不能大于12位！')
+    } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+      callback('密码必须是英文，数字或者下划线组成！')
+    } else {
+      callback()
+    }
+  }
+
   render () {
     return (
       <div className="login">
@@ -25,10 +40,10 @@ export default class Login extends Component {
             <Form.Item
               name="username"
               rules={[
-                {
-                  required: true,
-                  message: '请输入你的用户名！',
-                },
+                { required: true, message: '请输入你的用户名！' },
+                { min: 4, message: '用户名至少4位！' },
+                { max: 12, message: '用户名最多12位！' },
+                { pattern: /^[a-zA-Z0-9_]+$/, message: '用户名必须是英文，数字或者下划线组成！' }
               ]}
             >
               <Input prefix={<UserOutlined style={{color: 'rgba(0,0,0,.25)'}} className="site-form-item-icon" />} placeholder="用户名" />
@@ -36,10 +51,7 @@ export default class Login extends Component {
             <Form.Item 
               name="password"
               rules={[
-                {
-                  required: true,
-                  message: '请输入你的密码！',
-                },
+                { validator: this.validatePwd }
               ]}
             >
               <Input prefix={<LockOutlined style={{color: 'rgba(0,0,0,.25)'}} className="site-form-item-icon" />} type="password" placeholder="密码" />
