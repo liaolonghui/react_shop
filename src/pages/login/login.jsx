@@ -1,15 +1,24 @@
 import React, { Component } from "react"
-import { Form, Input, Button } from 'antd'
+import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 
 import './login.less'
 import logo from './images/logo.png'
+import { reqLogin } from '../../api'
 
 // 登录的路由界面
 export default class Login extends Component {
 
-  onFinish = (values) => {
-    console.log(values)
+  onFinish = async (values) => {
+    const { username, password } = values
+    const data = await reqLogin(username, password)
+    if (data.status !==0) {
+      message.error(data.msg)
+    } else {
+      message.success('登录成功！')
+      // 跳转到管理界面
+      this.props.history.replace('/')
+    }
   }
 
   // 验证密码（自定义验证）
