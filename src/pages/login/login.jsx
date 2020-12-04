@@ -15,15 +15,16 @@ export default class Login extends Component {
   // 验证密码（自定义验证）
   validatePwd = (rule, value, callback) => {
     if (!value) {
-      callback('请输入密码！')
+      return Promise.reject('请输入密码！')
     } else if (value.length < 4) {
-      callback('密码长度不能小于4位！')
+      return Promise.reject('密码长度不能小于4位！')
     } else if (value.length > 12) {
-      callback('密码长度不能大于12位！')
+      return Promise.reject('密码长度不能大于12位！')
     } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-      callback('密码必须是英文，数字或者下划线组成！')
+      return Promise.reject('密码必须是英文，数字或者下划线组成！')
     } else {
-      callback()
+      // callback()在antd4中应都改为return Promise.reject('...')或者return Promise.resolve()
+      return Promise.resolve()
     }
   }
 
