@@ -4,8 +4,15 @@ import { message } from 'antd'
 
 export const reqLogin = (username, password) => ajax('/login', {username, password}, 'POST')
 
+// 添加用户
 export const reqAddUser = (user) => ajax('/manage/user/add', user, 'POST')
 
+// 获取一级/二级分类的列表
+export const reqCategorys = (parentId) => ajax('/manage/category/list', {parentId})
+// 添加分类
+export const reqAddCategory = ({categoryName, parentId}) => ajax('/manage/category/add', {categoryName, parentId}, 'POST')
+// 更新分类
+export const reqUpdateCagegory = ({categoryId, categoryName}) => ajax('/manage/category/update', {categoryId, categoryName}, 'POST')
 
 // 天气查询          jsonp
 // 6c495fc6eeae6b603d48436aa7eb25f7
