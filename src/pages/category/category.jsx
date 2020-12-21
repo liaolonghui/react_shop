@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import { Card, Table, Button, message, Modal } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { reqCategorys } from '../../api'
+import { reqCategorys, reqUpdateCagegory, reqAddCategory } from '../../api'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import AddForm from './add-form'
 import UpdateForm from './update-form'
@@ -31,7 +31,7 @@ export default class Category extends Component {
         width: 300,
         render: (category) => ( // 指定返回需要显示的元素
           <span>
-            <Button onClick={this.showUpdate}>修改分类</Button>
+            <Button onClick={() => {this.showUpdate(category)}}>修改分类</Button>
             {this.state.parentId==='0' ? <Button style={{marginLeft: '10px'}} onClick={() => {this.showSubCategorys(category)}}>查看子分类</Button> : null}
           </span>
         )
@@ -96,7 +96,10 @@ export default class Category extends Component {
   }
 
   // 显示更新确认框
-  showUpdate = () => {
+  showUpdate = (category) => {
+    // 保存分类对象
+    this.category = category
+    // 更新状态，显示修改确认框
     this.setState({
       showStatus: 2
     })
@@ -108,8 +111,22 @@ export default class Category extends Component {
   }
 
   // 更新分类
-  updateCategory = () => {
-
+  updateCategory = async () => {
+    // 隐藏确认框
+    this.setState({
+      showStatus: 0
+    })
+    // 发请求更新分类
+    const categoryId = this.category._id
+    const categoryName = this.form.current.getFieldValue('categoryName')
+    const result = await reqUpdateCagegory({categoryId, categoryName})
+    if (result.status === 0) {
+      message.success('修改成功！')
+      // 重新显示列表
+      this.getCategorys()
+    } else {
+      message.error('修改失败！')
+    }
   }
 
   UNSAFE_componentWillMount() {
@@ -125,8 +142,9 @@ export default class Category extends Component {
 
     // 读取状态数据
     const {loading, subCategorys, parentId, parentName, categorys, showStatus} = this.state
+    const category = this.category || {name: ''}
 
-    // card的右侧标题
+    // card的左侧标题
     const title = parentId === '0' ? "一级分类列表" : (
       <span>
         <Button onClick={() => {this.showCategorys()}}>一级分类列表</Button>
@@ -142,11 +160,11 @@ export default class Category extends Component {
         <Card title={title} extra={extra}>
           <Table dataSource={parentId==='0' ? categorys : subCategorys} columns={this.columns} pagination={{defaultPageSize: 5, showQuickJumper: true}} loading={loading} bordered rowKey="_id" />
         </Card>
-        <Modal title="添加分类" visible={showStatus===1} onOk={this.addCategory} onCancel={this.handleCancel}>
+        <Modal title="添加分类" visible={showStatus===1} onOk={this.addCategory} onCancel={this.handleCancel} destroyOnClose>
           <AddForm />
         </Modal>
-        <Modal title="修改分类" visible={showStatus===2} onOk={this.updateCategory} onCancel={this.handleCancel}>
-          <UpdateForm />
+        <Modal title="修改分类" visible={showStatus===2} onOk={this.updateCategory} onCancel={this.handleCancel}  destroyOnClose>
+          <UpdateForm categoryName={category.name} setForm={(form) => {this.form = form}} />
         </Modal>
       </div>
     )

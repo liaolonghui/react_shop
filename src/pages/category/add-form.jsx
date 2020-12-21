@@ -5,14 +5,9 @@ const Item = Form.Item
 const Option = Select.Option
 
 export default class AddForm extends Component {
-
-  onFinish = () => {
-    console.log('finish')
-  }
-
   render() {
     return (
-      <Form onFinish={this.onFinish}>
+      <Form>
         <Item name="parentId" initialValue='0'>
           <Select>
             <Option value='0'>一级分类</Option>
