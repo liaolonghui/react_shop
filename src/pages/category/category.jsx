@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
-import { Card, Table, Button, message } from 'antd'
+import { Card, Table, Button, message, Modal } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { reqCategorys } from '../../api'
 import { ArrowRightOutlined } from '@ant-design/icons'
+import AddForm from './add-form'
+import UpdateForm from './update-form'
 
 // 商品分类路由
 export default class Category extends Component {
@@ -13,6 +15,7 @@ export default class Category extends Component {
     subCategorys: [], // 子分类列表
     parentId: '0', // 当前需要显示的分类列表的parentI的，默认获取一级分类列表
     parentName: '', // 父分类名称，默认为空
+    showStatus: 0, // 标识添加/更新的确认框是否显示，0：都不显示，1：显示添加，2：显示更新。
   }
 
   // 初始化table所有列的数组
@@ -28,7 +31,7 @@ export default class Category extends Component {
         width: 300,
         render: (category) => ( // 指定返回需要显示的元素
           <span>
-            <Button>修改分类</Button>
+            <Button onClick={this.showUpdate}>修改分类</Button>
             {this.state.parentId==='0' ? <Button style={{marginLeft: '10px'}} onClick={() => {this.showSubCategorys(category)}}>查看子分类</Button> : null}
           </span>
         )
@@ -78,7 +81,38 @@ export default class Category extends Component {
     })
   }
 
-  componentWillMount() {
+  // 点击取消，隐藏确认框
+  handleCancel = () => {
+    this.setState({
+      showStatus: 0
+    })
+  }
+
+  // 显示添加确认框
+  showAdd = () => {
+    this.setState({
+      showStatus: 1
+    })
+  }
+
+  // 显示更新确认框
+  showUpdate = () => {
+    this.setState({
+      showStatus: 2
+    })
+  }
+
+  // 添加分类
+  addCategory = () => {
+
+  }
+
+  // 更新分类
+  updateCategory = () => {
+
+  }
+
+  UNSAFE_componentWillMount() {
     this.initColumns()
   }
 
@@ -90,7 +124,7 @@ export default class Category extends Component {
   render() {
 
     // 读取状态数据
-    const {loading, subCategorys, parentId, parentName, categorys} = this.state
+    const {loading, subCategorys, parentId, parentName, categorys, showStatus} = this.state
 
     // card的右侧标题
     const title = parentId === '0' ? "一级分类列表" : (
@@ -101,13 +135,19 @@ export default class Category extends Component {
       </span>
     )
     // card的右侧
-    const extra = <Button icon={<PlusOutlined />} type="primary">添加</Button>
+    const extra = <Button icon={<PlusOutlined />} type="primary" onClick={this.showAdd}>添加</Button>
 
     return (
       <div>
         <Card title={title} extra={extra}>
           <Table dataSource={parentId==='0' ? categorys : subCategorys} columns={this.columns} pagination={{defaultPageSize: 5, showQuickJumper: true}} loading={loading} bordered rowKey="_id" />
         </Card>
+        <Modal title="添加分类" visible={showStatus===1} onOk={this.addCategory} onCancel={this.handleCancel}>
+          <AddForm />
+        </Modal>
+        <Modal title="修改分类" visible={showStatus===2} onOk={this.updateCategory} onCancel={this.handleCancel}>
+          <UpdateForm />
+        </Modal>
       </div>
     )
   }
