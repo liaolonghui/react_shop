@@ -107,42 +107,47 @@ export default class Category extends Component {
   }
 
   // 添加分类
-  addCategory = async () => {
-    this.setState({
-      showStatus: 0
-    })
-    const {categoryName, parentId} = this.form.current.getFieldsValue()
-    const result = await reqAddCategory({categoryName, parentId})
-    if (result.status === 0) {
-      message.success('添加分类成功！')
-      // 当前parentId与所添加分类的parentId相同时才应该重新获取当前列表数据
-      if (parentId === this.state.parentId) {
-        this.getCategorys()
-      } else if (parentId === '0') {    // 但是在二级分类列表下添加一级分类时必须更新一下一级分类列表数据，否则回到一级分类时看不到新数据
-        this.getCategorys('0')
+  addCategory = () => {
+    this.form.current.validateFields().then(async values => {
+      this.setState({
+        showStatus: 0
+      })
+      const {categoryName, parentId} = values
+      const result = await reqAddCategory({categoryName, parentId})
+      if (result.status === 0) {
+        message.success('添加分类成功！')
+        // 当前parentId与所添加分类的parentId相同时才应该重新获取当前列表数据
+        if (parentId === this.state.parentId) {
+          this.getCategorys()
+        } else if (parentId === '0') {    // 但是在二级分类列表下添加一级分类时必须更新一下一级分类列表数据，否则回到一级分类时看不到新数据
+          this.getCategorys('0')
+        }
+      } else {
+        message.error('添加分类失败！')
       }
-    } else {
-      message.error('添加分类失败！')
-    }
+    }).catch(err => err)
   }
 
   // 更新分类
-  updateCategory = async () => {
-    // 隐藏确认框
-    this.setState({
-      showStatus: 0
-    })
-    // 发请求更新分类
-    const categoryId = this.category._id
-    const categoryName = this.form.current.getFieldValue('categoryName')
-    const result = await reqUpdateCagegory({categoryId, categoryName})
-    if (result.status === 0) {
-      message.success('修改分类成功！')
-      // 重新显示列表
-      this.getCategorys()
-    } else {
-      message.error('修改分类失败！')
-    }
+  updateCategory = () => {
+    // 先进行表单验证
+    this.form.current.validateFields().then(async values => {
+        // 隐藏确认框
+        this.setState({
+          showStatus: 0
+        })
+        // 发请求更新分类
+        const categoryId = this.category._id
+        const {categoryName} = values
+        const result = await reqUpdateCagegory({categoryId, categoryName})
+        if (result.status === 0) {
+          message.success('修改分类成功！')
+          // 重新显示列表
+          this.getCategorys()
+        } else {
+          message.error('修改分类失败！')
+        }
+    }).catch(err => err)
   }
 
   UNSAFE_componentWillMount() {
