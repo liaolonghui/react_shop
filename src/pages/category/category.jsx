@@ -39,11 +39,11 @@ export default class Category extends Component {
     ]
   }
 
-  // 异步获取一级/二级分类列表
-  getCategorys = async () => {
+  // 异步获取一级/二级分类列表  如果没有指定parentId则根据状态中的parentId发送请求。
+  getCategorys = async (parentId) => {
     // 发请求前先loading
     this.setState({loading: true})
-    const {parentId} = this.state
+    parentId = parentId || this.state.parentId
     const result = await reqCategorys(parentId)
     // 发完请求后隐藏loading
     this.setState({loading: false})
@@ -83,6 +83,7 @@ export default class Category extends Component {
 
   // 点击取消，隐藏确认框
   handleCancel = () => {
+    message.info('已取消操作！')
     this.setState({
       showStatus: 0
     })
@@ -106,8 +107,23 @@ export default class Category extends Component {
   }
 
   // 添加分类
-  addCategory = () => {
-
+  addCategory = async () => {
+    this.setState({
+      showStatus: 0
+    })
+    const {categoryName, parentId} = this.form.current.getFieldsValue()
+    const result = await reqAddCategory({categoryName, parentId})
+    if (result.status === 0) {
+      message.success('添加分类成功！')
+      // 当前parentId与所添加分类的parentId相同时才应该重新获取当前列表数据
+      if (parentId === this.state.parentId) {
+        this.getCategorys()
+      } else if (parentId === '0') {    // 但是在二级分类列表下添加一级分类时必须更新一下一级分类列表数据，否则回到一级分类时看不到新数据
+        this.getCategorys('0')
+      }
+    } else {
+      message.error('添加分类失败！')
+    }
   }
 
   // 更新分类
@@ -121,11 +137,11 @@ export default class Category extends Component {
     const categoryName = this.form.current.getFieldValue('categoryName')
     const result = await reqUpdateCagegory({categoryId, categoryName})
     if (result.status === 0) {
-      message.success('修改成功！')
+      message.success('修改分类成功！')
       // 重新显示列表
       this.getCategorys()
     } else {
-      message.error('修改失败！')
+      message.error('修改分类失败！')
     }
   }
 
@@ -161,7 +177,7 @@ export default class Category extends Component {
           <Table dataSource={parentId==='0' ? categorys : subCategorys} columns={this.columns} pagination={{defaultPageSize: 5, showQuickJumper: true}} loading={loading} bordered rowKey="_id" />
         </Card>
         <Modal title="添加分类" visible={showStatus===1} onOk={this.addCategory} onCancel={this.handleCancel} destroyOnClose>
-          <AddForm />
+          <AddForm categorys={categorys} parentId={parentId} setForm={(form) => {this.form = form}} />
         </Modal>
         <Modal title="修改分类" visible={showStatus===2} onOk={this.updateCategory} onCancel={this.handleCancel}  destroyOnClose>
           <UpdateForm categoryName={category.name} setForm={(form) => {this.form = form}} />
