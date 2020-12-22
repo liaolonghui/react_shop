@@ -14,6 +14,17 @@ export const reqAddCategory = ({categoryName, parentId}) => ajax('/manage/catego
 // 更新分类
 export const reqUpdateCagegory = ({categoryId, categoryName}) => ajax('/manage/category/update', {categoryId, categoryName}, 'POST')
 
+// 获取商品分类列表
+export const reqProducts = (pageNum, pageSize) => ajax('/manage/product/list', {pageNum, pageSize})
+
+// 搜索商品分类列表（根据商品名称/商品描述）
+// searchType的值是productName或productDesc
+export const reqSearchProducts = ({pageNum, pageSize, searchName, searchType}) => ajax('/manage/product/search', {
+  pageNum,
+  pageSize,
+  [searchType]: searchName
+})
+
 // 天气查询          jsonp
 // 6c495fc6eeae6b603d48436aa7eb25f7
 // https://restapi.amap.com/v3/weather/weatherInfo?parameters       key city extensions output
