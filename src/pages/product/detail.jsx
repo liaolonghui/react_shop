@@ -1,15 +1,42 @@
 import React, {Component} from 'react'
 import { Card, List } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
+import { BASE_IMG_URL } from '../../utils/constants'
+import { reqCategory } from '../../api'
 
 const Item = List.Item
 
 export default class ProductDetail extends Component {
+
+  state = {
+    cName1: '', // 一级分类名称
+    cName2: '', // 二级分类名称
+  }
+
+  async componentDidMount() {
+    // pCategoryId可能为0
+    const { pCategoryId, categoryId } = this.props.location.state.product
+    if (pCategoryId === '0') { // 一级分类下的商品
+      const result = await reqCategory(categoryId)
+      const cName1 = result.data.name
+      this.setState({cName1})
+    } else { // 二级分类下的商品
+      const results = await Promise.all([reqCategory(pCategoryId), reqCategory(categoryId)])
+      const cName1 = results[0].data.name
+      const cName2 = results[1].data.name
+      this.setState({cName1, cName2})
+    }
+  }
+  
   render() {
+
+    // 读取携带过来的state
+    const { name, desc, price, detail, imgs } = this.props.location.state.product
+    const { cName1, cName2 } = this.state
 
     const title = (
       <span>
-        <ArrowLeftOutlined />
+        <ArrowLeftOutlined style={{color: 'green', marginRight: '10px', fontSize: '20', cursor: 'pointer'}} onClick={() => {this.props.history.goBack()}} />
         <span>商品详情</span>
       </span>
     )
@@ -19,30 +46,33 @@ export default class ProductDetail extends Component {
         <List>
           <Item>
             <span className="left">商品名称：</span>
-            <span>哈哈哈哈哈哈</span>
+            <span>{name}</span>
           </Item>
           <Item>
             <span className="left">商品描述：</span>
-            <span>描述.....</span>
+            <span>{desc?desc:'无'}</span>
           </Item>
           <Item>
             <span className="left">商品价格：</span>
-            <span>250元</span>
+            <span>{price}元</span>
           </Item>
           <Item>
             <span className="left">所属分类：</span>
-            <span>电脑 --&gt; 笔记本</span>
+            <span>{cName1} {cName2 ? '--> '+cName2 : ''}</span>
           </Item>
           <Item>
             <span className="left">商品图片：</span>
             <span>
-              <img className="product-img" src="http://img.article.pchome.net/00/20/46/61/hyhyhy-2007-05-11-8301.jpg" alt="img"/>
-              <img className="product-img" src="http://img.article.pchome.net/00/20/46/61/hyhyhy-2007-05-11-8301.jpg" alt="img"/>
+              {
+                imgs.map(img => (
+                  <img className="product-img" key={img} src={ BASE_IMG_URL + img} alt="img"/>
+                ))
+              }
             </span>
           </Item>
           <Item>
             <span className="left">商品详情：</span>
-            <span dangerouslySetInnerHTML={{__html: '<h1 style="color: red;">商品详情的内容标题</h1>'}}>
+            <span dangerouslySetInnerHTML={{__html: detail?detail:'无'}}>
             </span>
           </Item>
         </List>
