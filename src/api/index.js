@@ -20,6 +20,9 @@ export const reqCategory = (categoryId) => ajax('/manage/category/info', {catego
 // 获取商品分类列表
 export const reqProducts = (pageNum, pageSize) => ajax('/manage/product/list', {pageNum, pageSize})
 
+// 更新商品的状态（上架/下架）
+export const reqUpdateStatus = (productId, status) => ajax('/manage/product/updateStatus', {productId, status}, 'POST')
+
 // 搜索商品分类列表（根据商品名称/商品描述）
 // searchType的值是productName或productDesc
 export const reqSearchProducts = ({pageNum, pageSize, searchName, searchType}) => ajax('/manage/product/search', {
