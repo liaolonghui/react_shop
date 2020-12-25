@@ -56,7 +56,7 @@ export default class ProductHome extends Component {
           return (
             <span>
               <Button onClick={() => {this.props.history.push('/product/detail', {product})}}>详情</Button>
-              <Button>修改</Button>
+              <Button onClick={() => {this.props.history.push('/product/addupdate', product)}}>修改</Button>
             </span>
           )
         }
@@ -92,7 +92,6 @@ export default class ProductHome extends Component {
   // 更新指定商品的状态
   updateStatus = async (productId, status) => {
     const result = await reqUpdateStatus(productId, status)
-    console.log(result)
     if (result.status === 0) {
       message.success('商品状态更新成功！')
       this.getProducts(this.pageNum)
