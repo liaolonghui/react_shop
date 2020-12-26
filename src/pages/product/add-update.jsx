@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
-import { Card, Form, Input, Cascader, Button } from 'antd'
+import { Card, Form, Input, Cascader, Button, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 
 import PicturesWall from './pictures-wall'
 import RichTextEditor from './rich-text-editor'
-import { reqCategorys } from '../../api'
+import { reqCategorys, reqAddOrUpdateProduct } from '../../api'
 
 const { Item } = Form
 const { TextArea } = Input
@@ -91,10 +91,33 @@ export default class ProductAddUpdate extends Component {
     })
   }
 
-  onFinish = (values) => {
-    values.imgs = this.pw.current.getImgs()
-    values.detail = this.editor.current.getDetail()
-    console.log(values)
+  onFinish =async (values) => {
+    // 1.收集数据，并封装成product对象
+    const { name, desc, price, categoryIds } = values
+    let pCategoryId, categoryId
+    if (categoryIds.length === 1) {
+      pCategoryId = '0'
+      categoryId = categoryIds[0]
+    } else {
+      pCategoryId = categoryIds[0]
+      categoryId = categoryIds[1]
+    }
+    const imgs = this.pw.current.getImgs()
+    const detail = this.editor.current.getDetail()
+    const product = { pCategoryId, categoryId, name, desc, price, imgs, detail }
+    // 如果是更新需要添加_id
+    if (this.isUpdate) {
+      product._id = this.product._id
+    }
+    // 2.调用接口请求函数取添加/更新
+    const result = await reqAddOrUpdateProduct(product)
+    if (result.status === 0) {
+      message.success(`${this.isUpdate ? '更新' : '添加'}商品成功！`)
+      this.props.history.goBack()
+    } else {
+      message.error(`${this.isUpdate ? '更新' : '添加'}商品失败！`)
+    }
+    // 3.根据结果提示
   }
 
   // 验证价格的自定义验证函数

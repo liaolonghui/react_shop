@@ -31,7 +31,11 @@ export const reqSearchProducts = ({pageNum, pageSize, searchName, searchType}) =
   [searchType]: searchName
 })
 
+// 删除指定名称的图片
 export const reqDeleteImg = (name) => ajax('/manage/img/delete', {name}, 'POST')
+
+// 添加/修改商品（看传入的product是否有_id，有的话就是update，否则就是add）
+export const reqAddOrUpdateProduct = (product) => ajax('/manage/product/'+(product._id?'update':'add'), product, 'POST')
 
 // 天气查询          jsonp
 // 6c495fc6eeae6b603d48436aa7eb25f7
