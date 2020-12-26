@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
-import { Card, Form, Input, Cascader, Upload, Button } from 'antd'
+import { Card, Form, Input, Cascader, Button } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 
+import PicturesWall from './pictures-wall'
 import { reqCategorys } from '../../api'
 
 const { Item } = Form
@@ -11,6 +12,11 @@ export default class ProductAddUpdate extends Component {
 
   state = {
     options: [],
+  }
+
+  constructor(props) {
+    super(props)
+    this.pw = React.createRef()
   }
 
   initOptions = async (categorys) => {
@@ -84,6 +90,7 @@ export default class ProductAddUpdate extends Component {
   }
 
   onFinish = (values) => {
+    values.imgs = this.pw.current.getImgs()
     console.log(values)
   }
 
@@ -113,7 +120,7 @@ export default class ProductAddUpdate extends Component {
 
     const {isUpdate, product} = this
 
-    const {pCategoryId, categoryId} = product
+    const {pCategoryId, categoryId, imgs} = product
     // 用于接收级联分类Id的数组
     const categoryIds = []
     if (isUpdate) {
@@ -161,7 +168,7 @@ export default class ProductAddUpdate extends Component {
             />
           </Item>
           <Item label="商品图片">
-            <Upload></Upload>
+            <PicturesWall ref={this.pw} imgs={imgs} />
           </Item>
           <Item label="商品详情">
             <div>商品详情......</div>
