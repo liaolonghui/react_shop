@@ -3,6 +3,7 @@ import { Card, Form, Input, Cascader, Button } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 
 import PicturesWall from './pictures-wall'
+import RichTextEditor from './rich-text-editor'
 import { reqCategorys } from '../../api'
 
 const { Item } = Form
@@ -17,6 +18,7 @@ export default class ProductAddUpdate extends Component {
   constructor(props) {
     super(props)
     this.pw = React.createRef()
+    this.editor = React.createRef()
   }
 
   initOptions = async (categorys) => {
@@ -91,6 +93,7 @@ export default class ProductAddUpdate extends Component {
 
   onFinish = (values) => {
     values.imgs = this.pw.current.getImgs()
+    values.detail = this.editor.current.getDetail()
     console.log(values)
   }
 
@@ -120,7 +123,7 @@ export default class ProductAddUpdate extends Component {
 
     const {isUpdate, product} = this
 
-    const {pCategoryId, categoryId, imgs} = product
+    const {pCategoryId, categoryId, imgs, detail} = product
     // 用于接收级联分类Id的数组
     const categoryIds = []
     if (isUpdate) {
@@ -170,8 +173,8 @@ export default class ProductAddUpdate extends Component {
           <Item label="商品图片">
             <PicturesWall ref={this.pw} imgs={imgs} />
           </Item>
-          <Item label="商品详情">
-            <div>商品详情......</div>
+          <Item label="商品详情" labelCol={{span: 2}} wrapperCol={{span: 20}}>
+            <RichTextEditor ref={this.editor} detail={detail} />
           </Item>
           <Item>
             <Button type="primary" htmlType="submit">提交</Button>
