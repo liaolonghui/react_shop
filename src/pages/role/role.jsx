@@ -1,68 +1,14 @@
 import React, {Component} from 'react'
 import { Card, Button, Table } from 'antd'
 
+import { reqRoles }from '../../api'
+
 // 角色路由
 export default class Role extends Component {
 
   state = {
-    roles: [
-      {
-        "_id": "asdasda",
-        "name": "角色1",
-        "create_time": "2020-02-22",
-        "auth_name": "王八羔子",
-        "auth_time": "2020-05-12"
-      },
-      {
-        "_id": "asdas",
-        "name": "角色2",
-        "create_time": "2020-02-22",
-        "auth_name": "王八羔子",
-        "auth_time": "2020-05-12"
-      },
-      {
-        "_id": "asdasdasd",
-        "name": "角色5",
-        "create_time": "2020-02-22",
-        "auth_name": "王八羔子",
-        "auth_time": "2020-05-12"
-      },
-      {
-        "_id": "qwer",
-        "name": "王宝见",
-        "create_time": "2020-02-22",
-        "auth_name": "王八羔子",
-        "auth_time": "2020-05-12"
-      },
-      {
-        "_id": "qwerfgvc",
-        "name": "蛇皮怪",
-        "create_time": "2020-02-22",
-        "auth_name": "王八羔子",
-        "auth_time": "2020-05-12"
-      },
-      {
-        "_id": "qwerfdasdgvc",
-        "name": "蛇皮s怪",
-        "create_time": "2020-02-22",
-        "auth_name": "王八羔子",
-        "auth_time": "2020-05-12"
-      },
-      {
-        "_id": "qwerfsssgvc",
-        "name": "蛇皮怪s",
-        "create_time": "2020-02-22",
-        "auth_name": "王八羔子",
-        "auth_time": "2020-05-12"
-      },
-      {
-        "_id": "qwaaaerfgvc",
-        "name": "蛇皮怪ddd",
-        "create_time": "2020-02-22",
-        "auth_name": "王八羔子",
-        "auth_time": "2020-05-12"
-      },
-    ]
+    roles: [],
+    role: {}
   }
 
   initColumns = () => {
@@ -89,8 +35,16 @@ export default class Role extends Component {
   onRow = role => {
     return {
       onClick: event => {  // 点击了行
-        console.log('click-row', role, event)
+        this.setState({role})
       }
+    }
+  }
+
+  getRoles = async () => {
+    const result = await reqRoles()
+    if (result.status === 0) {
+      const roles = result.data
+      this.setState({roles})
     }
   }
 
@@ -98,14 +52,18 @@ export default class Role extends Component {
     this.initColumns()
   }
 
+  componentDidMount() {
+    this.getRoles()
+  }
+
   render() {
 
-    const { roles } = this.state
+    const { roles,role } = this.state
     
     const title = (
       <span>
         <Button type="primary" style={{marginRight: '15px'}}>创建角色</Button>
-        <Button type="primary" disabled>设置角色权限</Button>
+        <Button type="primary" disabled={!role._id}>设置角色权限</Button>
       </span>
     )
 
@@ -117,7 +75,7 @@ export default class Role extends Component {
           dataSource={roles}
           columns={this.columns}
           pagination={{defaultPageSize: 5}}
-          rowSelection={{type: 'radio'}}
+          rowSelection={{type: 'radio', selectedRowKeys: [role._id]}}
           onRow={this.onRow}
         />
       </Card>
