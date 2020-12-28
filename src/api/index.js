@@ -40,6 +40,9 @@ export const reqAddOrUpdateProduct = (product) => ajax('/manage/product/'+(produ
 // 获取所有角色的列表 
 export const reqRoles = () => ajax('/manage/role/list')
 
+// 添加角色
+export const reqAddRole = (roleName) => ajax('/manage/role/add', {roleName}, 'POST')
+
 // 天气查询          jsonp
 // 6c495fc6eeae6b603d48436aa7eb25f7
 // https://restapi.amap.com/v3/weather/weatherInfo?parameters       key city extensions output
