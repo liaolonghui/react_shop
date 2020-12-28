@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { Card, Button, Table, Modal, message } from 'antd'
 import { reqRoles, reqAddRole }from '../../api'
 import AddForm from './add-form'
+import AuthForm from './auth-form' 
 
 // 角色路由
 export default class Role extends Component {
@@ -9,7 +10,8 @@ export default class Role extends Component {
   state = {
     roles: [],
     role: {},
-    isShowAdd: false
+    isShowAdd: false,
+    isShowAuth: false
   }
 
   initColumns = () => {
@@ -72,6 +74,11 @@ export default class Role extends Component {
     })
   }
 
+  // 设置角色权限
+  updateRole = () => {
+
+  }
+
   UNSAFE_componentWillMount() {
     this.initColumns()
   }
@@ -82,12 +89,12 @@ export default class Role extends Component {
 
   render() {
 
-    const { roles, role, isShowAdd } = this.state
+    const { roles, role, isShowAdd, isShowAuth } = this.state
     
     const title = (
       <span>
         <Button type="primary" style={{marginRight: '15px'}} onClick={() => {this.setState({isShowAdd: true})}}>创建角色</Button>
-        <Button type="primary" disabled={!role._id}>设置角色权限</Button>
+        <Button type="primary" disabled={!role._id} onClick={() => {this.setState({isShowAuth: true})}}>设置角色权限</Button>
       </span>
     )
 
@@ -104,6 +111,9 @@ export default class Role extends Component {
         />
         <Modal title="添加角色" visible={isShowAdd} onOk={this.addRole} onCancel={() => {this.setState({isShowAdd: false})}} destroyOnClose>
           <AddForm setForm={(form) => {this.form = form}}></AddForm>
+        </Modal>
+        <Modal title="设置角色权限" visible={isShowAuth} onOk={this.updateRole} onCancel={() => {this.setState({isShowAuth: false})}} destroyOnClose>
+          <AuthForm role={role}></AuthForm>
         </Modal>
       </Card>
     )
