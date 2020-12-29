@@ -11,6 +11,18 @@ export default class AuthForm extends Component {
     role: PropTypes.object
   }
 
+  constructor(props) {
+    super(props)
+    const {menus} = this.props.role
+    this.state = {
+      checkedKeys: menus
+    }
+  }
+
+  // 为父组件提交获取最新menus数据的方法
+  getMenus = () => this.state.checkedKeys
+
+  // 树形控件的选项数据
   treeData = [
     {
       title: '平台权限',
@@ -18,6 +30,19 @@ export default class AuthForm extends Component {
       children: [...menuConfig]
     }
   ]
+
+  onCheck = (checkedKeys, info) => {
+    this.setState({
+      checkedKeys
+    })
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const menus = nextProps.role.menus
+    this.setState({
+      checkedKeys: menus
+    })
+  }
 
   render() {
 
@@ -30,7 +55,9 @@ export default class AuthForm extends Component {
         </Item>
         <Tree
           checkable
+          checkedKeys={this.state.checkedKeys}
           defaultExpandAll
+          onCheck={this.onCheck}
           treeData={this.treeData}
         />
       </Form>

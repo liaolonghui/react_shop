@@ -2,7 +2,10 @@ import React, {Component} from 'react'
 import { Card, Button, Table, Modal, message } from 'antd'
 import { reqRoles, reqAddRole }from '../../api'
 import AddForm from './add-form'
-import AuthForm from './auth-form' 
+import AuthForm from './auth-form'
+import { reqUpdateRole } from '../../api'
+import memoryUtils from '../../utils/memoryUtils'
+import { formateDate } from '../../utils/dateUtils'
 
 // 角色路由
 export default class Role extends Component {
@@ -14,6 +17,12 @@ export default class Role extends Component {
     isShowAuth: false
   }
 
+  constructor(props) {
+    super(props)
+    // 创建一个ref容器
+    this.auth = React.createRef()
+  }
+
   initColumns = () => {
     this.columns = [
       {
@@ -22,11 +31,13 @@ export default class Role extends Component {
       },
       {
         title: '创建时间',
-        dataIndex: 'create_time'
+        dataIndex: 'create_time',
+        render: (createTime) => formateDate(createTime)
       },
       {
         title: '授权时间',
-        dataIndex: 'auth_time'
+        dataIndex: 'auth_time',
+        render: formateDate
       },
       {
         title: '授权人',
@@ -74,9 +85,26 @@ export default class Role extends Component {
     })
   }
 
-  // 设置角色权限
-  updateRole = () => {
-
+  // 设置角色权限（更新角色）
+  updateRole = async () => {
+    this.setState({isShowAuth: false})
+    const role = this.state.role
+    // 获取最新的menus
+    const menus = this.auth.current.getMenus()
+    role.menus = menus
+    role.auth_name = memoryUtils.user.username
+    role.auth_time = Date.now()
+    // 请求更新
+    const result = await reqUpdateRole(role)
+    if (result.status === 0) {
+      message.success('设置角色权限成功！')
+      // this.getRoles()
+      this.setState({
+        roles: [...this.state.roles]
+      })
+    } else {
+      message.error('设置角色权限失败！')
+    }
   }
 
   UNSAFE_componentWillMount() {
@@ -98,6 +126,8 @@ export default class Role extends Component {
       </span>
     )
 
+    console.log(roles)
+
     return (
       <Card title={title}>
         <Table
@@ -109,11 +139,28 @@ export default class Role extends Component {
           rowSelection={{type: 'radio', selectedRowKeys: [role._id]}}
           onRow={this.onRow}
         />
-        <Modal title="添加角色" visible={isShowAdd} onOk={this.addRole} onCancel={() => {this.setState({isShowAdd: false})}} destroyOnClose>
+        <Modal
+          title="添加角色"
+          visible={isShowAdd}
+          onOk={this.addRole}
+          onCancel={() => {
+            this.setState({isShowAdd: false})
+            message.info('添加角色操作已取消！')
+          }}
+          destroyOnClose
+        >
           <AddForm setForm={(form) => {this.form = form}}></AddForm>
         </Modal>
-        <Modal title="设置角色权限" visible={isShowAuth} onOk={this.updateRole} onCancel={() => {this.setState({isShowAuth: false})}} destroyOnClose>
-          <AuthForm role={role}></AuthForm>
+        <Modal
+          title="设置角色权限"
+          visible={isShowAuth}
+          onOk={this.updateRole}
+          onCancel={() => {
+            this.setState({isShowAuth: false})
+            message.info('设置角色权限操作已取消！')
+          }}
+        >
+          <AuthForm ref={this.auth} role={role}></AuthForm>
         </Modal>
       </Card>
     )
