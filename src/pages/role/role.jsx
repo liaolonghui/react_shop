@@ -126,8 +126,6 @@ export default class Role extends Component {
       </span>
     )
 
-    console.log(roles)
-
     return (
       <Card title={title}>
         <Table

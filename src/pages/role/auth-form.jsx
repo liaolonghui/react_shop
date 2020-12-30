@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Form, Input, Tree } from 'antd'
 import PropTypes from 'prop-types'
 import menuConfig from '../../config/menuConfig'
 
 const Item = Form.Item
 
-export default class AuthForm extends Component {
+export default class AuthForm extends PureComponent {
 
   static propTypes = {
     role: PropTypes.object
