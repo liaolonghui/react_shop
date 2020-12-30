@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
-import { Card, Button, Table, Modal } from 'antd'
+import { Card, Button, Table, Modal, message } from 'antd'
 import { formateDate } from '../../utils/dateUtils'
 import { PAGE_SIZE } from '../../utils/constants'
-import { reqUsers } from '../../api'
+import { reqDeleteUser, reqUsers } from '../../api'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 // 用户路由
 export default class User extends Component {
@@ -42,7 +43,7 @@ export default class User extends Component {
         render: (user) => (
           <span>
             <Button onClick={() => {this.setState({isShow: true})}}>修改</Button>
-            <Button style={{marginLeft: '5px'}}>删除</Button>
+            <Button style={{marginLeft: '5px'}} onClick={() => {this.deleteUser(user)}}>删除</Button>
           </span>
         )
       }
@@ -71,6 +72,28 @@ export default class User extends Component {
         roles
       })
     }
+  }
+
+  // 删除用户
+  deleteUser = (user) => {
+    Modal.confirm({
+      title: `确认删除 ${user.username} 用户吗？`,
+      icon: <ExclamationCircleOutlined />,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: async () => {
+        const result = await reqDeleteUser(user._id)
+        if (result.status === 0) {
+          message.success('删除用户成功！')
+          this.getUsers()
+        } else {
+          message.error('删除用户失败！')
+        }
+      },
+      onCancel: () => {
+        message.info(`已取消删除操作！`)
+      }
+    })
   }
 
   // 添加或更新用户

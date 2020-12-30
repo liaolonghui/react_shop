@@ -45,6 +45,8 @@ export const reqUpdateRole = (role) => ajax('/manage/role/update', role, 'POST')
 
 // 获取所有用户的列表
 export const reqUsers = () => ajax('/manage/user/list')
+// 删除用户
+export const reqDeleteUser = (userId) => ajax('/manage/user/delete',  {userId}, 'POST')
 
 
 // 天气查询          jsonp
