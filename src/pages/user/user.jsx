@@ -4,6 +4,7 @@ import { formateDate } from '../../utils/dateUtils'
 import { PAGE_SIZE } from '../../utils/constants'
 import { reqDeleteUser, reqUsers } from '../../api'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
+import UserForm from './user-form'
 
 // 用户路由
 export default class User extends Component {
@@ -119,7 +120,7 @@ export default class User extends Component {
       <Card title={title} >
           <Table dataSource={users} columns={this.columns} pagination={{defaultPageSize: PAGE_SIZE}} loading={false} bordered rowKey="_id" />
           <Modal title="添加用户" visible={isShow} onOk={this.addOrUpdateUser} onCancel={() => {this.setState({isShow: false})}} destroyOnClose>
-            <div>添加或删除用户</div>
+            <UserForm setForm={(form) => {this.form = form}}></UserForm>
           </Modal>
       </Card>
     )
