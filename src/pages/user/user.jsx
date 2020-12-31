@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import { Card, Button, Table, Modal, message } from 'antd'
 import { formateDate } from '../../utils/dateUtils'
 import { PAGE_SIZE } from '../../utils/constants'
-import { reqDeleteUser, reqUsers } from '../../api'
+import { reqAddUser, reqDeleteUser, reqUsers } from '../../api'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import UserForm from './user-form'
 
@@ -99,7 +99,19 @@ export default class User extends Component {
 
   // 添加或更新用户
   addOrUpdateUser = () => {
-
+    this.form.current.validateFields().then(async values => {
+      // 1.收集输入数据
+      // 2.提交添加的请求
+      const result = await reqAddUser(values)
+      // 3.更新列表显示
+      if (result.status === 0) {
+        message.success('添加用户成功！')
+        this.getUsers()
+        this.setState({isShow: false})
+      } else {
+        message.error('添加用户失败！')
+      }
+    })
   }
 
   UNSAFE_componentWillMount() {
@@ -112,7 +124,7 @@ export default class User extends Component {
 
   render() {
 
-    const { users, isShow } = this.state
+    const { users, roles, isShow } = this.state
 
     const title = <Button type="primary" onClick={() => {this.setState({isShow: true})}}>创建用户</Button>
 
@@ -120,7 +132,7 @@ export default class User extends Component {
       <Card title={title} >
           <Table dataSource={users} columns={this.columns} pagination={{defaultPageSize: PAGE_SIZE}} loading={false} bordered rowKey="_id" />
           <Modal title="添加用户" visible={isShow} onOk={this.addOrUpdateUser} onCancel={() => {this.setState({isShow: false})}} destroyOnClose>
-            <UserForm setForm={(form) => {this.form = form}}></UserForm>
+            <UserForm roles={roles} setForm={(form) => {this.form = form}}></UserForm>
           </Modal>
       </Card>
     )

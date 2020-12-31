@@ -4,9 +4,6 @@ import { message } from 'antd'
 
 export const reqLogin = (username, password) => ajax('/login', {username, password}, 'POST')
 
-// 添加用户
-export const reqAddUser = (user) => ajax('/manage/user/add', user, 'POST')
-
 
 // 获取一级/二级分类的列表
 export const reqCategorys = (parentId) => ajax('/manage/category/list', {parentId})
@@ -47,6 +44,8 @@ export const reqUpdateRole = (role) => ajax('/manage/role/update', role, 'POST')
 export const reqUsers = () => ajax('/manage/user/list')
 // 删除用户
 export const reqDeleteUser = (userId) => ajax('/manage/user/delete',  {userId}, 'POST')
+// 添加用户
+export const reqAddUser = (user) => ajax('/manage/user/add', user, 'POST')
 
 
 // 天气查询          jsonp

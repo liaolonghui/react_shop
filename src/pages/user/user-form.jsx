@@ -12,7 +12,8 @@ export default class UserForm extends PureComponent {
   roleRef = React.createRef()
   
   static propTypes = {
-    setForm: PropTypes.func.isRequired
+    setForm: PropTypes.func.isRequired,
+    roles: PropTypes.array.isRequired
   }
 
   UNSAFE_componentWillMount() {
@@ -20,6 +21,9 @@ export default class UserForm extends PureComponent {
   }
 
   render() {
+
+    const {roles} = this.props
+
     return (
       <div>
         <Form ref={this.roleRef} labelCol={{ span: 5 }} wrapperCol={{ span: 17 }}>
@@ -35,11 +39,11 @@ export default class UserForm extends PureComponent {
           <Item name="email" label="邮箱：" rules={[{required: true, message: '邮箱必须输入！'},{type: 'email', message: '请输入正确的邮箱！'}]}>
             <Input placeholder="请输入邮箱"></Input>
           </Item>
-          <Item name="role_id" label="角色：" initialValue="jack" rules={[{required: true, message: '角色必须选择！'}]}>
-            <Select style={{ width: 150 }}>
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="Yiminghe">yiminghe</Option>
+          <Item name="role_id" label="角色：" rules={[{required: true, message: '角色必须选择！'}]}>
+            <Select style={{ width: 160 }} placeholder="请选择角色">
+              {
+                roles.map(role => <Option key={role._id} value={role._id}>{role.name}</Option>)
+              }
             </Select>
           </Item>
         </Form>
