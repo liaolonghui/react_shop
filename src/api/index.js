@@ -45,7 +45,7 @@ export const reqUsers = () => ajax('/manage/user/list')
 // 删除用户
 export const reqDeleteUser = (userId) => ajax('/manage/user/delete',  {userId}, 'POST')
 // 添加用户
-export const reqAddUser = (user) => ajax('/manage/user/add', user, 'POST')
+export const reqAddOrUpdateUser = (user) => ajax('/manage/user/'+(user._id?'update':'add'), user, 'POST')
 
 
 // 天气查询          jsonp
