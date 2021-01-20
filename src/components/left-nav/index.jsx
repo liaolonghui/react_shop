@@ -4,11 +4,28 @@ import { Menu } from 'antd'
 
 import logo from '../../assets/images/logo.png'
 import menuList from '../../config/menuConfig'
+import memoryUtils from '../../utils/memoryUtils'
 import './index.less'
 
 const { SubMenu } = Menu
 
 class LeftNav extends Component {
+
+  // 判断当前用户对item是否有权限
+  hasAuth = (item) => {
+    const {key, isPublic} = item
+    const menus = memoryUtils.user.role.menus
+    const username = memoryUtils.user.username
+    // 1.如果是admin用户则直接通过
+    // 2.如果当前item是公共的
+    // 3.看key在不在menus中
+    if (username === 'admin' || isPublic || menus.indexOf(key)!==-1 ) {
+      return true
+    } else if(item.children) {  // 4.如果当前用户有某个子item的权限
+      return !!item.children.find(child => menus.indexOf(child.key)!==-1)
+    }
+    return false
+  }
 
   // 根据menu的数据数组生成对应的标签数组
   getMenuNodes = (menuList) => {
@@ -16,29 +33,30 @@ class LeftNav extends Component {
     const path = this.props.location.pathname
 
     return menuList.map(item => {
-      // item是一个对象，可能有children属性
-      // 返回<Menu.Item>或者<SubMenu>
-      if (!item.children) {
-        return (
-          <Menu.Item key={item.key} icon={item.icon}>
-            <Link to={item.key}>
-              {item.title}
-            </Link>
-          </Menu.Item>
-        )
-      } else {
-
-        // 查找一个与当前请求路径匹配的子Item。如果存在就说明当前item的子列表需要打开。
-        const cItem = item.children.find(cItem => path.indexOf(cItem.key)===0)
-        if (cItem) {
-          this.openKey = item.key
+      // 如果用户有对应的权限才显示对应item(菜单项)
+      if (this.hasAuth(item)) { 
+        // item是一个对象，可能有children属性
+        // 返回<Menu.Item>或者<SubMenu>
+        if (!item.children) {
+          return (
+            <Menu.Item key={item.key} icon={item.icon}>
+              <Link to={item.key}>
+                {item.title}
+              </Link>
+            </Menu.Item>
+          )
+        } else {
+          // 查找一个与当前请求路径匹配的子Item。如果存在就说明当前item的子列表需要打开。
+          const cItem = item.children.find(cItem => path.indexOf(cItem.key)===0)
+          if (cItem) {
+            this.openKey = item.key
+          }
+          return (
+            <SubMenu key={item.key} icon={item.icon} title={item.title}>
+              {this.getMenuNodes(item.children)}
+            </SubMenu>
+          )
         }
-        
-        return (
-          <SubMenu key={item.key} icon={item.icon} title={item.title}>
-            {this.getMenuNodes(item.children)}
-          </SubMenu>
-        )
       }
     })
   }
