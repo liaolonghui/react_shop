@@ -23,7 +23,7 @@ export default class Login extends Component {
       memoryUtils.user = user  // 保存在内存中
       storageUtils.saveUser(user)  // 保存在localstorage中
       // 跳转到管理界面
-      this.props.history.replace('/')
+      this.props.history.replace('/home')
     }
   }
 

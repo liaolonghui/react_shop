@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
 import {Link, withRouter} from 'react-router-dom'
 import { Menu } from 'antd'
+import { connect } from 'react-redux'
 
 import logo from '../../assets/images/logo.png'
 import menuList from '../../config/menuConfig'
 import memoryUtils from '../../utils/memoryUtils'
+import { setHeadTitle } from '../../redux/actions'
 import './index.less'
 
 const { SubMenu } = Menu
@@ -38,9 +40,13 @@ class LeftNav extends Component {
         // item是一个对象，可能有children属性
         // 返回<Menu.Item>或者<SubMenu>
         if (!item.children) {
+          // 当前要显示的头部标题  判断item是否是当前对应的item
+          if (item.key===path || path.indexOf(item.key)===0) {
+            this.props.setHeadTitle(item.title)
+          }
           return (
             <Menu.Item key={item.key} icon={item.icon}>
-              <Link to={item.key}>
+              <Link to={item.key} onClick={() => {this.props.setHeadTitle(item.title)}}>
                 {item.title}
               </Link>
             </Menu.Item>
@@ -91,4 +97,7 @@ class LeftNav extends Component {
   }
 }
 
-export default withRouter(LeftNav)
+export default connect(
+  state => ({}),
+  { setHeadTitle }
+)(withRouter(LeftNav))

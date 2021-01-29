@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
 import {withRouter} from 'react-router-dom'
-import { message, Modal, Button } from 'antd';
+import { message, Modal, Button } from 'antd'
+import { connect } from 'react-redux'
 
 import './index.less'
-import menuList from '../../config/menuConfig'
+// import menuList from '../../config/menuConfig'
 import { formateDate } from '../../utils/dateUtils'
 import memoryUtils from '../../utils/memoryUtils'
 import storageUtils from '../../utils/storageUtils'
@@ -31,22 +32,22 @@ class Header extends Component {
     this.setState({dayPicUrl, weather})
   }
 
-  getTitle = () => {
-    const path = this.props.location.pathname
-    let title
-    // 从menuList中找出对应的title
-    menuList.forEach(item => {
-      if (item.key===path) {
-        title = item.title
-      } else if (item.children) {
-        const cItem = item.children.find(cItem => path.indexOf(cItem.key)===0)
-        if (cItem) {
-          title = cItem.title
-        }
-      }
-    })
-    return title
-  }
+  // getTitle = () => {
+  //   const path = this.props.location.pathname
+  //   let title
+  //   // 从menuList中找出对应的title
+  //   menuList.forEach(item => {
+  //     if (item.key===path) {
+  //       title = item.title
+  //     } else if (item.children) {
+  //       const cItem = item.children.find(cItem => path.indexOf(cItem.key)===0)
+  //       if (cItem) {
+  //         title = cItem.title
+  //       }
+  //     }
+  //   })
+  //   return title
+  // }
 
   // 退出登录
   logout = () => {
@@ -86,7 +87,8 @@ class Header extends Component {
 
     const { currentTime, dayPicUrl, weather } = this.state
     const username = memoryUtils.user.username
-    const title = this.getTitle()
+    // const title = this.getTitle()  不用循环查找的方式了，改用redux管理头部标题
+    const title = this.props.headTitle
 
     return (
       <div className="header">
@@ -107,4 +109,7 @@ class Header extends Component {
   }
 }
 
-export default withRouter(Header)
+export default connect(
+  state => ({ headTitle: state.headTitle }),
+  {}
+)(withRouter(Header))
