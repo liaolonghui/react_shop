@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 
 import logo from '../../assets/images/logo.png'
 import menuList from '../../config/menuConfig'
-import memoryUtils from '../../utils/memoryUtils'
+// import memoryUtils from '../../utils/memoryUtils'
 import { setHeadTitle } from '../../redux/actions'
 import './index.less'
 
@@ -16,8 +16,10 @@ class LeftNav extends Component {
   // 判断当前用户对item是否有权限
   hasAuth = (item) => {
     const {key, isPublic} = item
-    const menus = memoryUtils.user.role.menus
-    const username = memoryUtils.user.username
+    // const menus = memoryUtils.user.role.menus
+    // const username = memoryUtils.user.username
+    const menus = this.props.user.role.menus
+    const username = this.props.user.username
     // 1.如果是admin用户则直接通过
     // 2.如果当前item是公共的
     // 3.看key在不在menus中
@@ -98,6 +100,6 @@ class LeftNav extends Component {
 }
 
 export default connect(
-  state => ({}),
+  state => ({user: state.user}),
   { setHeadTitle }
 )(withRouter(LeftNav))

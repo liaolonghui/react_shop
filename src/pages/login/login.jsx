@@ -1,30 +1,36 @@
 import React, { Component } from "react"
-import { Form, Input, Button, message } from 'antd'
+import { Form, Input, Button } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import { Redirect } from "react-router-dom"
+import { connect } from 'react-redux'
+
 import './login.less'
 import logo from '../../assets/images/logo.png'
-import { reqLogin } from '../../api'
-import memoryUtils from '../../utils/memoryUtils'
-import storageUtils from '../../utils/storageUtils'
-import { Redirect } from "react-router-dom"
+// import { reqLogin } from '../../api'
+// import memoryUtils from '../../utils/memoryUtils'
+// import storageUtils from '../../utils/storageUtils'
+import { login } from '../../redux/actions'
 
 // 登录的路由界面
-export default class Login extends Component {
+class Login extends Component {
 
   onFinish = async (values) => {
-    const { username, password } = values
-    const data = await reqLogin(username, password)
-    if (data.status !==0) {
-      message.error(data.msg)
-    } else {
-      message.success('登录成功！')
-      // 保存user
-      const user = data.data
-      memoryUtils.user = user  // 保存在内存中
-      storageUtils.saveUser(user)  // 保存在localstorage中
-      // 跳转到管理界面
-      this.props.history.replace('/home')
-    }
+    // const { username, password } = values
+    // const data = await reqLogin(username, password)
+    // if (data.status !==0) {
+    //   message.error(data.msg)
+    // } else {
+    //   message.success('登录成功！')
+    //   // 保存user
+    //   const user = data.data
+    //   memoryUtils.user = user  // 保存在内存中
+    //   storageUtils.saveUser(user)  // 保存在localstorage中
+    //   // 跳转到管理界面
+    //   this.props.history.replace('/home')
+    // }
+
+    // 调用分发异步action的函数，发送登录请求.....
+    this.props.login(values)
   }
 
   // 验证密码（自定义验证）
@@ -45,9 +51,10 @@ export default class Login extends Component {
 
   render () {
     // 如果用户已登录则直接跳转到管理界面
-    const user = memoryUtils.user
+    // const user = memoryUtils.user
+    const user = this.props.user
     if (user && user._id) {
-      return <Redirect path='/' />
+      return <Redirect to='/home' />
     }
 
     return (
@@ -57,6 +64,7 @@ export default class Login extends Component {
           <h1>React后台管理系统</h1>
         </header>
         <section className="login-content">
+          <div className={user.errorMsg ? 'error-msg show' : 'error-msg'}>{user.errorMsg}</div>
           <h2>用户登录</h2>
           <Form name="normal_login" className="login-form" initialValues={{ remember: true, }} onFinish={this.onFinish}>
             <Form.Item
@@ -89,3 +97,8 @@ export default class Login extends Component {
     )
   }
 }
+
+export default connect(
+  state => ({ user: state.user }),
+  { login }
+)(Login)

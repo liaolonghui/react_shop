@@ -6,9 +6,10 @@ import { connect } from 'react-redux'
 import './index.less'
 // import menuList from '../../config/menuConfig'
 import { formateDate } from '../../utils/dateUtils'
-import memoryUtils from '../../utils/memoryUtils'
-import storageUtils from '../../utils/storageUtils'
+// import memoryUtils from '../../utils/memoryUtils'
+// import storageUtils from '../../utils/storageUtils'
 import { reqWeather } from '../../api'
+import { logout } from '../../redux/actions'
 
 const { confirm } = Modal
 
@@ -56,12 +57,15 @@ class Header extends Component {
       content: '确定要退出吗？',
       onOk: () => {
         // 本地
-        storageUtils.removeUser()
+        // storageUtils.removeUser()
         // 内存
-        memoryUtils.user = {}
+        // memoryUtils.user = {}
         // 跳转
-        message.success('退出成功！')
-        this.props.history.replace('/login')
+        // message.success('退出成功！')
+        // this.props.history.replace('/login')
+                
+        // 改用redux
+        this.props.logout()
       },
       onCancel() {
         message.info('已取消退出！')
@@ -86,7 +90,8 @@ class Header extends Component {
   render() {
 
     const { currentTime, dayPicUrl, weather } = this.state
-    const username = memoryUtils.user.username
+    // const username = memoryUtils.user.username
+    const username = this.props.user.username
     // const title = this.getTitle()  不用循环查找的方式了，改用redux管理头部标题
     const title = this.props.headTitle
 
@@ -110,6 +115,6 @@ class Header extends Component {
 }
 
 export default connect(
-  state => ({ headTitle: state.headTitle }),
-  {}
+  state => ({ headTitle: state.headTitle, user: state.user }),
+  { logout }
 )(withRouter(Header))
