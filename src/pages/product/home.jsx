@@ -4,6 +4,7 @@ import { PlusOutlined } from '@ant-design/icons'
 
 import { reqProducts, reqSearchProducts, reqUpdateStatus } from '../../api'
 import { PAGE_SIZE } from '../../utils/constants'
+import memoryUtils from '../../utils/memoryUtils'
 
 const Option = Select.Option
 
@@ -55,13 +56,27 @@ export default class ProductHome extends Component {
         render: (product) => {
           return (
             <span>
-              <Button onClick={() => {this.props.history.push('/product/detail', {product})}}>详情</Button>
-              <Button onClick={() => {this.props.history.push('/product/addupdate', product)}}>修改</Button>
+              <Button onClick={() => {this.showDetail(product)}}>详情</Button>
+              <Button onClick={() => {this.showUpdate(product)}}>修改</Button>
             </span>
           )
         }
       }
     ]
+  }
+
+  // 跳转到详情页
+  showDetail = (product) => {
+    // 缓存product对象给detail组件使用
+    memoryUtils.product = product
+    this.props.history.push('/product/detail')
+  }
+
+  // 跳转到修改页
+  showUpdate = (product) => {
+    // 缓存product对象给addUpdate组件使用
+    memoryUtils.product = product
+    this.props.history.push('/product/addupdate')
   }
 
   // 获取指定页码的数据显示

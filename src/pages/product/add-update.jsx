@@ -5,6 +5,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import PicturesWall from './pictures-wall'
 import RichTextEditor from './rich-text-editor'
 import { reqCategorys, reqAddOrUpdateProduct } from '../../api'
+import memoryUtils from '../../utils/memoryUtils'
 
 const { Item } = Form
 const { TextArea } = Input
@@ -130,16 +131,21 @@ export default class ProductAddUpdate extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    // 取出携带的state
-    const product = this.props.location.state
+    // 取出携带的state    若是browerRouter则可用this.props.location.state.product
+    const product = memoryUtils.product
     // 保存一个是否是更新的标识
-    this.isUpdate = !!product
+    this.isUpdate = !!product._id
     // 保存商品
     this.product = product || {}
   }
 
   componentDidMount() {
     this.getCategorys('0')
+  }
+
+  // 卸载之前清除product
+  componentWillUnmount() {
+    memoryUtils.product = {}
   }
 
   render() {

@@ -3,6 +3,7 @@ import { Card, List } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { BASE_IMG_URL } from '../../utils/constants'
 import { reqCategory } from '../../api'
+import memoryUtils from '../../utils/memoryUtils'
 
 const Item = List.Item
 
@@ -14,8 +15,8 @@ export default class ProductDetail extends Component {
   }
 
   async componentDidMount() {
-    // pCategoryId可能为0
-    const { pCategoryId, categoryId } = this.props.location.state.product
+    // pCategoryId可能为0     若是browerRouter则可用this.props.location.state.product
+    const { pCategoryId, categoryId } = memoryUtils.product
     if (pCategoryId === '0') { // 一级分类下的商品
       const result = await reqCategory(categoryId)
       const cName1 = result.data.name
@@ -28,10 +29,15 @@ export default class ProductDetail extends Component {
     }
   }
   
+  // 卸载之前清除product
+  componentWillUnmount() {
+    memoryUtils.product = {}
+  }
+  
   render() {
 
-    // 读取携带过来的state
-    const { name, desc, price, detail, imgs } = this.props.location.state.product
+    // 读取携带过来的state   若是browerRouter则可用this.props.location.state.product
+    const { name, desc, price, detail, imgs } = memoryUtils.product
     const { cName1, cName2 } = this.state
 
     const title = (
